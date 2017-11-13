@@ -1,15 +1,21 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const startIpfsAndOrbitDB = require('./start-ipfs-and-orbitdb')
 
+// Route handlers
 const create = require('./routes/create')
 const get = require('./routes/get')
+const add = require('./routes/add')
 
+// Logging
 const Logger = require('logplease')
 const logger = Logger.create("orbit-db-http-server", { color: Logger.Colors.Yellow })
 Logger.setLogLevel('ERROR')
 
+// Default port
 const defaultPort = require('../src/default-port')
 
+// Start
 const startHttpServer = async (options = {}) => {
   // Make sure we have a port
   const port = options.port || defaultPort
@@ -53,11 +59,15 @@ const startHttpServer = async (options = {}) => {
       }
 
       // Setup routes
+      // app.use(bodyParser())
+      app.use(bodyParser.text({ type: 'text/plain' }))
+      // app.use(bodyParser.urlencoded({ extended: true }))
       app.use(logRequest) // Logging
       app.use(useOrbitDB) // Pass OrbitDB instance to the route handlers
       app.get('/', (req, res) => res.send('OrbitDB')) // Default index page
       app.get('/orbitdb/*', get) // Query a database
       app.get('/create/:type/:name', create) // Create a new databse
+      app.post('/add/orbitdb/*', add) // Add an entry to a databse
 
       // Started
       const startedText = `OrbitDB server started at http://localhost:${port}/`

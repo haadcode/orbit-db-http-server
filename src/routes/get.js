@@ -14,11 +14,11 @@ const get = async (req, res) => {
     await db.load()
 
     // Query for all results
-    const ressult = db.iterator({ limit: -1 }).collect()
+    const result = db.iterator({ limit: -1 }).collect()
 
     // Return the results
     res.send({
-      result: ressult
+      result: result
     })
   } catch (e) {
     // TODO: return 404 if the database doesn't exist
