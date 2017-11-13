@@ -30,7 +30,7 @@ describe('Query', function () {
       assert.equal(e.toString(), null)
     }
 
-    assert.equal(res.status, 404)
+    assert.equal(res.status, 500)
     assert.notEqual(json, null)
     assert.equal(json.error, `Error: Database '${address}' doesn't exist!`)
   })
