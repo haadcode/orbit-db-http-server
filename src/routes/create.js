@@ -4,7 +4,7 @@ const create = async (req, res) => {
     const { name, type } = req.params
 
     // Create the database
-    const db = await req.orbitdb.create(name, type)
+    const db = await req.orbitdb.create(name, type, { write: ['*'] })
 
     // Return databse info as the result
     res.send({

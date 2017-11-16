@@ -55,6 +55,7 @@ const startHttpServer = async (options = {}) => {
 
       const logRequest = (req, res, next) => {
         logger.debug(`[${req.method}] ${req.url}`)
+        req.logger = logger
         next()
       }
 

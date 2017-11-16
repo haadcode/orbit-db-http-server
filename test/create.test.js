@@ -3,13 +3,17 @@ const rmrf = require('rimraf')
 const Server = require('../src/server')
 const fetch = require('node-fetch')
 
+const host = '127.0.0.1'
+const port = 37373
+const url = 'http://' + host + ':' + port
+
 describe('Create', function () {
   this.timeout(20000)
   let server 
 
   before(async () => {
     rmrf.sync('./orbitdb')
-    server = await Server()
+    server = await Server({ port, host })
   })
 
   after(async () => {
@@ -24,7 +28,7 @@ describe('Create', function () {
 
     let res, json
     try {
-      res = await fetch(`http://localhost:37373/create/eventlog/hello`)
+      res = await fetch(`${url}/create/eventlog/hello`)
       json = await res.json()
     } catch (e) {
       assert.equal(e.toString(), null)
