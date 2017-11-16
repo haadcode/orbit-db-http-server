@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const startIpfsAndOrbitDB = require('./start-ipfs-and-orbitdb')
+const stoppable = require('stoppable')
 
 // Route handlers
 const create = require('./routes/create')
@@ -17,8 +18,11 @@ const defaultPort = require('../src/default-port')
 
 // Start
 const startHttpServer = async (options = {}) => {
+  // Bind to a specific host if given
+  const host = options.host
   // Make sure we have a port
   const port = options.port || defaultPort
+
   logger.log(`Start http-server in port ${port}`)
 
   // Create the server
@@ -26,7 +30,8 @@ const startHttpServer = async (options = {}) => {
 
   return new Promise((resolve, reject) => {
     // Start the HTTP server
-    let server = app.listen(port, async () => {
+    let server = app.listen({ port: port, host: host }, async () => {
+      server = stoppable(server, 1000)
       // Start IPFS and OrbitDB
       let { orbitdb, ipfs } = await startIpfsAndOrbitDB(options)
       // Add a state info object to the server
@@ -37,13 +42,13 @@ const startHttpServer = async (options = {}) => {
         started: true,
       }
       // Add a stop function that resets the server state after the server was closed
+      const stopFunc = server.stop
       server.stop = () => {
-        return new Promise(resolve => {
-          server.close(async () => {
-            await orbitdb.disconnect()
-            await ipfs.stop()
+        return new Promise(async (resolve) => {
+          await orbitdb.disconnect()
+          ipfs.stop(() => {
             delete server.state
-            resolve()
+            stopFunc(() => resolve())
           })
         })
       }
@@ -59,10 +64,8 @@ const startHttpServer = async (options = {}) => {
       }
 
       // Setup routes
-      // app.use(bodyParser())
-      app.use(bodyParser.text({ type: 'text/plain' }))
-      // app.use(bodyParser.urlencoded({ extended: true }))
       app.use(logRequest) // Logging
+      app.use(bodyParser.text({ type: 'text/plain' }))
       app.use(useOrbitDB) // Pass OrbitDB instance to the route handlers
       app.get('/', (req, res) => res.send('OrbitDB')) // Default index page
       app.get('/orbitdb/*', get) // Query a database
@@ -70,7 +73,7 @@ const startHttpServer = async (options = {}) => {
       app.post('/add/orbitdb/*', add) // Add an entry to a databse
 
       // Started
-      const startedText = `OrbitDB server started at http://localhost:${port}/`
+      const startedText = `OrbitDB server started at http://${server.address().address}:${port}/`
       logger.log(startedText)
       console.log(startedText)
 

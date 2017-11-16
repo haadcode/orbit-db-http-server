@@ -13,6 +13,7 @@
     "form-data": "^2.3.1",
     "mocha": "^4.0.1",
     "node-fetch": "^1.7.3",
+    "resumer": "0.0.0",
     "rimraf": "^2.6.2"
   },
   "dependencies": {
@@ -21,6 +22,7 @@
     "express": "^4.16.2",
     "ipfs": "~0.26.0",
     "logplease": "^1.2.14",
-    "orbit-db": "github:orbitdb/orbit-db#feat/write-access"
+    "orbit-db": "github:orbitdb/orbit-db#feat/write-access",
+    "stoppable": "^1.0.4"
   }
 }

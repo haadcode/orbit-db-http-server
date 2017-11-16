@@ -5,6 +5,10 @@ const Server = require('../src/server')
 
 const defaultPort = require('../src/default-port')
 
+const host = '127.0.0.1'
+const port = 37373
+const url = 'http://' + host + ':' + port
+
 describe('Start & Stop', function () {
   this.timeout(20000)
 
@@ -37,7 +41,7 @@ describe('Start & Stop', function () {
     it('returns index page', async () => {
       let res, text
       try {
-        res = await fetch(`http://localhost:${defaultPort}/`)
+        res = await fetch(`${url}/`)
         text = await res.text()
       } catch (e) {
         assert.equal(e.toString(), null)
@@ -56,7 +60,7 @@ describe('Start & Stop', function () {
   describe('With options', () => {
     it('starts the http server in a specified port', async () => {
       const port = 44556
-      let server = await Server({ port: port })
+      let server = await Server({ port: port, host: host })
       assert.notEqual(server, null)
       assert.notEqual(server.state, null)
       assert.equal(server.state.started, true)
