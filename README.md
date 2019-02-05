@@ -2,7 +2,7 @@
 
 HTTP server and an API to run and manage [OrbitDB](https://github.com/orbitdb/orbit-db) databases.
 
-***Work in Progress!***
+**Status:** Unmaintained. This is an old proof of concept, and should not be used as an example for how to use OrbitDB presently.
 
 ## Install
 ```
@@ -20,3 +20,7 @@ npm start
 ```
 npm test
 ```
+
+## License
+
+[MIT](LICENSE) © 2018 Haadcode
